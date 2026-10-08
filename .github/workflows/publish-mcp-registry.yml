@@ -20,6 +20,7 @@ jobs:
             const p = require("./package.json"), s = require("./server.json");
             if (s.name !== p.mcpName) throw new Error(`name ${s.name} != mcpName ${p.mcpName}`);
             if (s.version !== p.version || s.packages[0].version !== p.version) throw new Error(`server.json version != package.json ${p.version}`);
+            if (s.description.length > 100) throw new Error(`description is ${s.description.length} chars; the registry allows 100`);
           '
       - name: Install mcp-publisher
         run: curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
