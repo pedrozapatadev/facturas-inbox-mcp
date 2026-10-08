@@ -26,3 +26,15 @@ it.skipIf(!existsSync(BIN))("serves tools over stdio from the built binary", asy
     await client.close();
   }
 }, 30_000);
+
+it.skipIf(!existsSync(BIN))("--demo serves the bundled sample inbox", async () => {
+  const transport = new StdioClientTransport({ command: process.execPath, args: [BIN, "--demo"], stderr: "ignore" });
+  const client = new Client({ name: "stdio-demo", version: "0.0.0" });
+  await client.connect(transport);
+  try {
+    const r = (await client.callTool({ name: "scan_folder", arguments: {} })) as { structuredContent?: { total_documents: number } };
+    expect(r.structuredContent?.total_documents).toBe(11);
+  } finally {
+    await client.close();
+  }
+}, 30_000);

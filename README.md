@@ -91,6 +91,16 @@ All arithmetic is in integer cents.
 
 Requires Node.js 20.12 or newer.
 
+### Try it in 30 seconds (bundled sample data)
+
+```bash
+claude mcp add facturas-demo -- npx -y facturas-inbox-mcp --demo
+```
+
+`--demo` serves the synthetic inbox that ships with the package. Then ask Claude:
+*"I'm the bookkeeper for CIF B87654323. What's our IVA position for Q3 2026, and what should I check
+by hand?"*
+
 ### Claude Code
 
 ```bash
@@ -114,8 +124,9 @@ Add this to `claude_desktop_config.json` (Settings → Developer → Edit Config
 
 ### Any other MCP client
 
-It's a standard stdio server: `npx -y facturas-inbox-mcp <folder> [more folders…]`. Folders can also
-come from `FACTURAS_INBOX_DIRS` (separated like `PATH`).
+It's a standard stdio server: `npx -y facturas-inbox-mcp <folder> [more folders…]`, or
+`npx -y facturas-inbox-mcp --demo`. Folders can also come from `FACTURAS_INBOX_DIRS` (separated
+like `PATH`).
 
 ### From source, with the sample inbox
 

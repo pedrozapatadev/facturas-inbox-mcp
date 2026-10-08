@@ -10,6 +10,7 @@
   "main": "dist/index.js",
   "files": [
     "dist",
+    "examples/inbox",
     "README.md",
     "LICENSE"
   ],
