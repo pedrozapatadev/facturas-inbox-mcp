@@ -215,6 +215,13 @@ test/             MCP-level tests (in-memory client, stdio e2e, sandbox escapes)
 Built on the official [MCP TypeScript SDK v2](https://ts.sdk.modelcontextprotocol.io/v2/) (`@modelcontextprotocol/server`),
 [zod](https://zod.dev) and [unpdf](https://github.com/unjs/unpdf).
 
+### Releasing
+
+1. Bump `version` in `package.json` and both `version` fields in `server.json`.
+2. `npm publish` (runs build + tests first; needs npm 2FA).
+3. `gh workflow run publish-mcp-registry.yml` lists the new version in the
+   [MCP Registry](https://registry.modelcontextprotocol.io) via GitHub OIDC (no secrets).
+
 ## Roadmap
 
 - Optional OCR pass for scanned documents

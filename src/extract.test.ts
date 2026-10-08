@@ -74,11 +74,13 @@ describe("extractInvoice", () => {
 });
 
 describe("hostile input", () => {
+  // Measured on a 2024 laptop: ~0.9 s with the bounded regex, ~31 s with the
+  // quadratic one it replaced. The 8 s budget leaves room for slow CI runners.
   it("stays linear on a long line of unclosed per-rate bases (ReDoS regression)", () => {
     const t = performance.now();
-    extractInvoice("IVA 21% (1 ".repeat(20_000));
-    expect(performance.now() - t).toBeLessThan(1000);
-  });
+    extractInvoice("IVA 21% (1 ".repeat(40_000));
+    expect(performance.now() - t).toBeLessThan(8000);
+  }, 60_000);
 
   it("keeps offsets aligned when the text has decomposed accents or Hangul", () => {
     const decomposed = "Café ".repeat(5) + "한".repeat(10);

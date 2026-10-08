@@ -5,6 +5,10 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { connect, INBOX, OWN_TAX_ID } from "./helpers.js";
 
+/** A real file that exists on every OS but sits outside the allowed folders. */
+const OUTSIDE_FILE = path.resolve(INBOX, "../../package.json");
+const IS_WINDOWS = process.platform === "win32";
+
 let h: Awaited<ReturnType<typeof connect>>;
 let scratch: string;
 
@@ -134,7 +138,8 @@ describe("export_csv", () => {
     const out = path.join(scratch, "q3.csv");
     const first = await h.call("export_csv", { output_path: out });
     expect(first.data).toMatchObject({ rows: 11, by_status: { ok: 6, needs_review: 2, not_an_invoice: 2, unreadable: 1 } });
-    expect((await stat(out)).mode & 0o777).toBe(0o600);
+    // Windows has no POSIX permission bits.
+    if (!IS_WINDOWS) expect((await stat(out)).mode & 0o777).toBe(0o600);
     const csv = await readFile(out, "utf8");
     expect(csv.split("\r\n").filter(Boolean)).toHaveLength(12);
     const again = await h.call("export_csv", { output_path: out });
@@ -156,11 +161,12 @@ describe("sandbox", () => {
   });
 
   it("rejects absolute paths elsewhere on disk", async () => {
-    expect((await h.call("classify_document", { path: "/etc/hosts" })).isError).toBe(true);
+    expect((await h.call("classify_document", { path: OUTSIDE_FILE })).isError).toBe(true);
     expect((await h.call("scan_folder", { folder: os.homedir() })).isError).toBe(true);
   });
 
-  it("rejects a symlink inside a root that points outside it", async () => {
+  // Creating symlinks on Windows needs admin or developer mode.
+  it.skipIf(IS_WINDOWS)("rejects a symlink inside a root that points outside it", async () => {
     const outside = await mkdtemp(path.join(os.tmpdir(), "facturas-outside-"));
     await writeFile(path.join(outside, "secret.txt"), "FACTURA secreta");
     await symlink(path.join(outside, "secret.txt"), path.join(scratch, "link.txt"));
@@ -171,8 +177,8 @@ describe("sandbox", () => {
   });
 
   it("gives the same answer for missing and existing paths outside the roots (no existence oracle)", async () => {
-    const existing = await h.call("classify_document", { path: "/etc/hosts" });
-    const missing = await h.call("classify_document", { path: "/etc/definitely-not-here.txt" });
+    const existing = await h.call("classify_document", { path: OUTSIDE_FILE });
+    const missing = await h.call("classify_document", { path: path.join(path.dirname(OUTSIDE_FILE), "definitely-not-here.txt") });
     expect(existing.text).toBe(missing.text);
     expect(existing.text).not.toContain(INBOX);
   });

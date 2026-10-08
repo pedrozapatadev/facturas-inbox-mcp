@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.pedrozapatadev/facturas-inbox-mcp",
+  "description": "Classify Spanish invoice PDFs, extract NIF/IVA/IRPF with arithmetic checks, summarize IVA per quarter.",
+  "repository": {
+    "url": "https://github.com/pedrozapatadev/facturas-inbox-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "facturas-inbox-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "valueHint": "folder",
+          "description": "Folder of PDF/TXT documents the server may read. Use --demo instead for the bundled sample inbox.",
+          "isRequired": true
+        }
+      ]
+    }
+  ]
+}
